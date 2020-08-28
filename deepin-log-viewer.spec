@@ -6,7 +6,7 @@
 %endif
 Name:          deepin-log-viewer
 Version:        5.6.1
-Release:        1
+Release:        2
 Summary:        Log Viewer is a useful tool for viewing system logs.
 License:        GPLv3+
 URL:            https://uos-packages.deepin.com/uos/pool/main/d/deepin-log-viewer/
@@ -14,6 +14,7 @@ Source0:        %{name}-%{version}.orig.tar.xz
 
 
 BuildRequires: qt5-qtbase-devel
+BuildRequires: dtkcore-devel
 BuildRequires: dtkwidget-devel
 BuildRequires: dtkgui-devel
 BuildRequires: deepin-gettext-tools
@@ -52,5 +53,8 @@ popd
 %doc README.md
 
 %changelog
+* Fri Aug 28 2020 chenbo pan <panchenbo@uniontech.com> - 5.0.10-2
+- fix compile fail
+
 * Thu Jul 30 2020 openEuler Buildteam <buildteam@openeuler.org> - 5.6.1-1
 - Package init

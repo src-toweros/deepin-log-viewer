@@ -1,58 +1,51 @@
-%bcond_with check
-
-%global with_debug 1
-%if 0%{?with_debug}
-%global debug_package   %{nil}
-%endif
 Name:          deepin-log-viewer
-Version:        5.6.1
-Release:        2
+Version:        5.8.0.23
+Release:        1
 Summary:        Log Viewer is a useful tool for viewing system logs.
 License:        GPLv3+
-URL:            https://uos-packages.deepin.com/uos/pool/main/d/deepin-log-viewer/
-Source0:        %{name}-%{version}.orig.tar.xz
+URL:            https://github.com/linuxdeepin/deepin-log-viewer
+Source0:        %{name}-%{version}.tar.gz
 
-
-BuildRequires: qt5-qtbase-devel
+BuildRequires: gcc-c++
+BuildRequires: cmake3
 BuildRequires: dtkcore-devel
 BuildRequires: dtkwidget-devel
-BuildRequires: dtkgui-devel
-BuildRequires: deepin-gettext-tools
-BuildRequires: qt5-linguist
-BuildRequires: qt5-qtmultimedia-devel
-BuildRequires: qt5-qtx11extras-devel
 BuildRequires: systemd-devel
+BuildRequires: libicu-devel
+BuildRequires: qt5-devel
 
 %description
-Log Viewer is a useful tool for viewing system logs.
-
+%{summary}.
 
 %prep
 %autosetup
 
 %build
-export PATH=$PATH:/usr/lib64/qt5/bin
-mkdir build && cd build
-%{_libdir}/qt5/bin/qmake ..
-%{__make}
-
-%install
-pushd %{_builddir}/%{name}-%{version}/build
-%make_install INSTALL_ROOT=%{buildroot}
+# help find (and prefer) qt5 utilities, e.g. qmake, lrelease
+export PATH=%{_qt5_bindir}:$PATH
+sed -i "s|^cmake_minimum_required.*|cmake_minimum_required(VERSION 3.0)|" $(find . -name "CMakeLists.txt")
+mkdir build && pushd build
+%cmake -DCMAKE_BUILD_TYPE=Release ../  -DAPP_VERSION=%{version} -DVERSION=%{version}
+%make_build
 popd
 
+%install
+%make_install -C build INSTALL_ROOT="%buildroot"
 
 %files
-%{_bindir}/deepin-log-viewer
+%license LICENSE
+%{_bindir}/%{name}
 %{_bindir}/logViewerAuth
-%{_datadir}/applications/deepin-log-viewer.desktop
-%{_datadir}/deepin-log-viewer/translations/deepin-log-viewer.qm
-%{_datadir}/deepin-log-viewer/translations/deepin-log-viewer_zh_CN.qm
-%{_datadir}/icons/hicolor/scalable/apps/deepin-log-viewer.svg
-%{_datadir}/polkit-1/actions/com.deepin.pkexec.logViewerAuth.policy
-%doc README.md
+%{_bindir}/logViewerTruncate
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/%{name}/translations/%{name}*
+%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+%{_datadir}/polkit-1/actions/*.policy
 
 %changelog
+* Mon Jul 12 2021 weidong <weidong@uniontech.com> - 5.8.0.23-1
+- Update 5.8.0.23
+
 * Fri Aug 28 2020 chenbo pan <panchenbo@uniontech.com> - 5.0.10-2
 - fix compile fail
 
